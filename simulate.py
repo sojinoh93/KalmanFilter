@@ -9,6 +9,24 @@ from plot import plot_covariance_ellipse
 dt = 0.1  # time tick [s]
 SIM_TIME = 50.0  # simulation time [s]
 
+''' Kalman filter modeling
+
+    1. State model
+    x = [x, y, theta, v]^t
+    
+    2. Control unit for omni-wheel
+    u = [v, w]^t
+     
+    3. Observation
+    z = [x, y, vx, vy]^t
+    
+    4. Modeling odometry
+    i) Encoder to velocity
+    
+    ii) Encoder to position (+theta)
+
+'''
+
 F = np.array([
     [1., .0, .0, .0],
     [.0, 1., .0, .0],
@@ -44,7 +62,7 @@ def main():
     P_est = np.eye(4)
 
     v = 1.0  # m/s
-    w = 0.1  # rad/s
+    w = 0.0  # rad/s
     u = np.array([[v, w]]).T
 
     kf = KalmanFilter(F, H, Q, R)
@@ -63,7 +81,7 @@ def main():
             [1., .0]
         ])
         x_gt, z = simulate(x_gt, F, B, u)
-        x_est, P_est =kf.fit(x_est,P_est, B, u, z)
+        x_est, P_est = kf.fit(x_est,P_est, B, u, z)
 
         # store data history
         h_x_est = np.hstack((h_x_est, x_est))
